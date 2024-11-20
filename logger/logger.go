@@ -64,6 +64,10 @@ func (l *logger) DPanic(msg string, fields ...zap.Field) {
 	l.zapLogger.DPanic(msg, fields...)
 }
 
+func (l *logger) Fatal(msg string, fields ...zap.Field) {
+	l.zapLogger.Fatal(msg, fields...)
+}
+
 func (l *logger) Infof(template string, args ...any) {
 	l.sugarLogger.Infof(template, args...)
 }
@@ -86,6 +90,10 @@ func (l *logger) Panicf(template string, args ...any) {
 
 func (l *logger) DPanicf(template string, args ...any) {
 	l.sugarLogger.DPanicf(template, args...)
+}
+
+func (l *logger) Fatalf(template string, args ...any) {
+	l.sugarLogger.Fatalf(template, args...)
 }
 
 // FromContext retrieves data from the context and returns a logger with those fields
