@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16.4-alpine
+    container_name: pg
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: atlana_shop
+      PGDATA: /data/postgres
+    volumes:
+      - .docker/pg-data:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - localnet
+    restart: unless-stopped
+
+networks:
+  localnet:
+    driver: bridge
