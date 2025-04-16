@@ -40,7 +40,7 @@ func (c *postgresConnector) Connect() (IDBConnector, error) {
 	}
 
 	// Ping to db to verify the connection
-	if err = c.ping(); err != nil {
+	if err = c.Ping(); err != nil {
 		return nil, err
 	}
 
@@ -68,7 +68,7 @@ func (c *postgresConnector) configPool() error {
 	return nil
 }
 
-func (c *postgresConnector) ping() error {
+func (c *postgresConnector) Ping() error {
 	sqlDB, err := c.db.DB()
 	if err != nil {
 		return err

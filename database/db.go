@@ -7,6 +7,7 @@ import (
 type IDBConnector interface {
 	GetConn() *gorm.DB
 	Connect() (IDBConnector, error)
+	Ping() error
 	Stop() error
 }
 
