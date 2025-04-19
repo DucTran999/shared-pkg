@@ -14,11 +14,7 @@ import (
 var ErrMock = errors.New("mock error")
 
 var tryablefunc = func(err error) bool {
-	if errors.Is(err, ErrMock) {
-		return true
-	}
-
-	return false
+	return errors.Is(err, ErrMock)
 }
 
 func Test_Do(t *testing.T) {
