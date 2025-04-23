@@ -1,6 +1,10 @@
 .vscode
 
+*/cmd
+
+.data
 .docker
+
 examples/logger/logs/*.log
 
 go.sum
