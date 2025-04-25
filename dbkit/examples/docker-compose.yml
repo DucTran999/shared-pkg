@@ -1,16 +1,32 @@
 services:
   postgres:
     image: postgres:16.4-alpine
-    container_name: pg
+    container_name: dbkit_pg
     environment:
       POSTGRES_USER: test
       POSTGRES_PASSWORD: test
       POSTGRES_DB: atlana_shop
       PGDATA: /data/postgres
     volumes:
-      - .docker/pg-data:/data/postgres
+      - ../../.docker/pg-data:/data/postgres
     ports:
       - "5432:5432"
+    networks:
+      - localnet
+    restart: unless-stopped
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.4-alpine
+    container_name: dbkit_clickhouse
+    environment:
+      CLICKHOUSE_DB: test_db
+      CLICKHOUSE_USER: test
+      CLICKHOUSE_PASSWORD: test
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ports:
+      - "9000:9000"
+      - "8120:8123"
+      - "9009:9009"
     networks:
       - localnet
     restart: unless-stopped

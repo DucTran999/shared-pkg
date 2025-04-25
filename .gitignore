@@ -3,4 +3,6 @@
 .docker
 examples/logger/logs/*.log
 
+cmd
+
 go.sum
