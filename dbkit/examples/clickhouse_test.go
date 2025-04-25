@@ -8,17 +8,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_PostgresConnect(t *testing.T) {
-	conn, err := dbkit.NewDBDialect(
-		dialects.PostgresDriver,
-		dialects.Config{
-			Host:     "localhost",
-			Port:     5432,
-			Username: "test",
-			Password: "test",
-			Database: "atlana_shop",
-		},
-	)
+func Test_ClickhouseConnect(t *testing.T) {
+	conn, err := dbkit.NewDBDialect(dialects.ClickhouseDriver, dialects.Config{
+		Host:     "localhost",
+		Port:     9000,
+		Username: "test",
+		Password: "test",
+		Database: "test_db",
+		Logging:  true,
+	})
 	require.NoError(t, err, "failed to create DB connector")
 	require.NotNil(t, conn, "expected a valid DB connection")
 
