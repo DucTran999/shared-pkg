@@ -67,7 +67,10 @@ func (c *clickhouseDialect) openClickhouseSQL() *sql.DB {
 	}
 
 	if c.cfg.SSL {
-		opts.TLS = &tls.Config{InsecureSkipVerify: true}
+		opts.TLS = &tls.Config{
+			MinVersion:         tls.VersionTLS12,
+			InsecureSkipVerify: true,
+		}
 	}
 
 	return std_ck.OpenDB(opts)
