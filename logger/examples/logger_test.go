@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"sync"
 	"testing"
 
 	"github.com/DucTran999/shared-pkg/logger"
@@ -21,9 +22,13 @@ func Test_Logging(t *testing.T) {
 	}
 	defer logInst.Sync()
 
+	var wg sync.WaitGroup
 	for range 10000 {
+		wg.Add(1)
 		go func(logger.ILogger) {
+			defer wg.Done()
 			logInst.FromContext(context.Background()).Error("example error log")
 		}(logInst)
 	}
+	wg.Wait()
 }
