@@ -1,7 +1,7 @@
 .vscode
 
 .docker
-examples/logger/logs/*.log
+logger/examples/logs
 
 cmd
 
