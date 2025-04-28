@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 	"log"
-	"time"
+	"testing"
 
 	"github.com/DucTran999/shared-pkg/logger"
 )
 
-func main() {
+func Test_Logging(t *testing.T) {
 	conf := logger.Config{
 		Environment: logger.Production,
 		LogToFile:   true,
@@ -19,14 +19,11 @@ func main() {
 	if err != nil {
 		log.Fatalln("Init logger ERR", err)
 	}
+	defer logInst.Sync()
 
-	i := 0
-	for i = 0; i < 10000; i++ {
+	for range 10000 {
 		go func(logger.ILogger) {
 			logInst.FromContext(context.Background()).Error("example error log")
 		}(logInst)
 	}
-
-	defer logInst.Sync()
-	time.Sleep(time.Second * 10)
 }
