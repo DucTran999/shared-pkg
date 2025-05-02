@@ -29,17 +29,16 @@ func NewClickhouseDialect(cfg Config) (Dialect, error) {
 }
 
 func (c *clickhouseDialect) open() (Dialect, error) {
-	sqlDB := c.openClickhouseSQL()
+	var err error
 
 	gormCfg := &gorm.Config{
 		Logger: c.logger(c.cfg.Logging),
 	}
 
-	db, err := gorm.Open(
-		clickhouse.New(clickhouse.Config{Conn: sqlDB}),
-		gormCfg,
-	)
-	if err != nil {
+	ch := clickhouse.New(clickhouse.Config{
+		Conn: c.openClickhouseSQL(),
+	})
+	if c.db, err = gorm.Open(ch, gormCfg); err != nil {
 		return nil, err
 	}
 
@@ -47,7 +46,6 @@ func (c *clickhouseDialect) open() (Dialect, error) {
 		return nil, err
 	}
 
-	c.db = db
 	return c, nil
 }
 
