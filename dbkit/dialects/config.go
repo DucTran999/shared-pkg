@@ -1,6 +1,9 @@
 package dialects
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 // Define error messages as constants
 var (
@@ -22,6 +25,10 @@ type Config struct {
 
 	SSL      bool
 	Timezone string
+
+	MaxIdleConns    int
+	MaxOpenConns    int
+	ConnMaxLifetime time.Duration
 }
 
 func validateConfig(cfg Config) error {

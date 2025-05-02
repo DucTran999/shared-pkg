@@ -83,3 +83,34 @@ func (c *dialect) logger(enable bool) logger.Interface {
 
 	return nil
 }
+
+func (c *dialect) configPool(config Config) error {
+	if c.db == nil {
+		return nil
+	}
+
+	sqlDB, err := c.db.DB()
+	if err != nil {
+		return err
+	}
+
+	// Default connection pool configuration
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Hour)
+
+	if config.MaxIdleConns > 0 {
+		// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
+		sqlDB.SetMaxIdleConns(config.MaxIdleConns)
+	}
+	if config.ConnMaxLifetime > 0 {
+		// SetMaxOpenConns sets the maximum number of open connections to the database.
+		sqlDB.SetConnMaxLifetime(config.ConnMaxLifetime)
+	}
+	if config.MaxOpenConns > 0 {
+		// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
+		sqlDB.SetMaxOpenConns(config.MaxOpenConns)
+	}
+
+	return nil
+}

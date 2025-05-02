@@ -43,6 +43,10 @@ func (c *clickhouseDialect) open() (Dialect, error) {
 		return nil, err
 	}
 
+	if err = c.dialect.configPool(c.cfg); err != nil {
+		return nil, err
+	}
+
 	c.db = db
 	return c, nil
 }
