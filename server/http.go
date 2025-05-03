@@ -3,50 +3,56 @@ package server
 import (
 	"context"
 	"fmt"
-	"log"
+
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/rs/zerolog"
 )
 
-type IHttpServer interface {
+type HttpServer interface {
 	Start() error
 	Stop() error
 }
 
 type httpServer struct {
 	server *http.Server
+	logger *zerolog.Logger
 }
 
 func (s *httpServer) Start() error {
-	log.Printf("server on %s", s.server.Addr)
+	s.logger.Info().Msgf("start server on %s", s.server.Addr)
 	if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		return fmt.Errorf("start server got err: %v", err)
+		return err
 	}
 
 	return nil
 }
 
 func (s *httpServer) Stop() error {
-	log.Println("http server is shutting down...")
+	s.logger.Info().Msg("http server is shutting down...")
 	if err := s.server.Shutdown(context.Background()); err != nil {
 		return fmt.Errorf("shutdown server got err: %v", err)
 	}
 
-	log.Println("http server shutdown successfully!")
+	s.logger.Info().Msg("http server shutdown successfully!")
 	return nil
 }
 
 // gracefulShutdown handles OS signals and performs a graceful shutdown of the server.
 func GracefulShutdown(shutdownTasks ...func() error) {
+	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339, NoColor: false}
+	logger := zerolog.New(output).With().Timestamp().Logger()
+
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
 	// Block until we receive a termination signal
 	<-quit
-	log.Println("Shutting down server...")
+	logger.Info().Msg("Shutting down server...")
 
 	// Create a context with a timeout to enforce graceful shutdown timing
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -57,7 +63,7 @@ func GracefulShutdown(shutdownTasks ...func() error) {
 
 	for _, task := range shutdownTasks {
 		if err := task(); err != nil {
-			log.Println(err)
+			logger.Warn().Msg(err.Error())
 			cleanExit = false
 		}
 	}
@@ -66,8 +72,8 @@ func GracefulShutdown(shutdownTasks ...func() error) {
 	<-ctx.Done()
 
 	if cleanExit {
-		log.Println("Server shut down cleanly")
+		logger.Info().Msg("Server shut down cleanly")
 	} else {
-		log.Println("Server encountered errors during shutdown")
+		logger.Info().Msg("Server encountered errors during shutdown")
 	}
 }
