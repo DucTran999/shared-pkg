@@ -71,5 +71,9 @@ func (c *postgresDialect) open() (Dialect, error) {
 		return nil, err
 	}
 
+	if err = c.dialect.configPool(c.config.base); err != nil {
+		return nil, err
+	}
+
 	return c, nil
 }
