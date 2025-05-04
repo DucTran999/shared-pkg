@@ -3,20 +3,15 @@ package dbkit
 import (
 	"fmt"
 
-	"gorm.io/gorm"
+	"github.com/DucTran999/shared-pkg/dbkit/dialects"
 )
 
-type DBConnector interface {
-	DB() *gorm.DB
-	Ping() error
-	Open() (DBConnector, error)
-	Close() error
-}
-
-func NewDBConnector(driver DBDriver, host string, options ...Option) (DBConnector, error) {
+func NewDBDialect(driver dialects.DBDriver, config dialects.Config) (dialects.Dialect, error) {
 	switch driver {
-	case PostgresDriver:
-		return newPostgresConnector(host, options...)
+	case dialects.PostgresDriver:
+		return dialects.NewPostgres(config)
+	case dialects.ClickhouseDriver:
+		return dialects.NewClickhouseDialect(config)
 	default:
 		return nil, fmt.Errorf("unsupported driver: %d", driver)
 	}

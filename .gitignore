@@ -4,7 +4,8 @@
 
 .data
 .docker
+logger/examples/logs
 
-examples/logger/logs/*.log
+cmd
 
 go.sum
