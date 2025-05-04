@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/DucTran999/shared-pkg/server"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
@@ -10,6 +12,7 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.GET("/ping", func(c *gin.Context) {
+		time.Sleep(time.Second * 10)
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})
