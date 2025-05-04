@@ -15,7 +15,7 @@ import (
 
 type HttpServer interface {
 	Start() error
-	Stop() error
+	Stop(ctx context.Context) error
 }
 
 type httpServer struct {
@@ -32,9 +32,10 @@ func (s *httpServer) Start() error {
 	return nil
 }
 
-func (s *httpServer) Stop() error {
+func (s *httpServer) Stop(ctx context.Context) error {
 	s.logger.Info().Msg("http server is shutting down...")
-	if err := s.server.Shutdown(context.Background()); err != nil {
+
+	if err := s.server.Shutdown(ctx); err != nil {
 		return fmt.Errorf("shutdown server got err: %v", err)
 	}
 
@@ -42,38 +43,34 @@ func (s *httpServer) Stop() error {
 	return nil
 }
 
-// gracefulShutdown handles OS signals and performs a graceful shutdown of the server.
-func GracefulShutdown(shutdownTasks ...func() error) {
+// GracefulShutdown handles OS signals and performs a graceful shutdown of the server.
+func GracefulShutdown(shutdownTasks ...func(ctx context.Context) error) {
+	const shutdownTimeout = 5 * time.Second
+
 	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339, NoColor: false}
 	logger := zerolog.New(output).With().Timestamp().Logger()
 
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	// Listen for SIGINT or SIGTERM
+	shutdownCtx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
-	// Block until we receive a termination signal
-	<-quit
+	<-shutdownCtx.Done()
 	logger.Info().Msg("Shutting down server...")
 
-	// Create a context with a timeout to enforce graceful shutdown timing
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
 
-	// Track if all tasks exit cleanly
 	cleanExit := true
-
 	for _, task := range shutdownTasks {
-		if err := task(); err != nil {
-			logger.Warn().Msg(err.Error())
+		if err := task(ctx); err != nil {
+			logger.Warn().Err(err).Msg("shutdown task error")
 			cleanExit = false
 		}
 	}
 
-	// Wait for the context to finish or timeout
-	<-ctx.Done()
-
 	if cleanExit {
 		logger.Info().Msg("Server shut down cleanly")
 	} else {
-		logger.Info().Msg("Server encountered errors during shutdown")
+		logger.Warn().Msg("Server encountered errors during shutdown")
 	}
 }
