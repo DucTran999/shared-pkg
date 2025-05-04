@@ -104,11 +104,11 @@ func (c *dialect) configPool(config Config) error {
 		sqlDB.SetMaxIdleConns(config.MaxIdleConns)
 	}
 	if config.ConnMaxLifetime > 0 {
-		// SetMaxOpenConns sets the maximum number of open connections to the database.
+		// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
 		sqlDB.SetConnMaxLifetime(config.ConnMaxLifetime)
 	}
 	if config.MaxOpenConns > 0 {
-		// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
+		// SetMaxOpenConns sets the maximum number of open connections to the database.
 		sqlDB.SetMaxOpenConns(config.MaxOpenConns)
 	}
 
