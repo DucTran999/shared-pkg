@@ -121,22 +121,31 @@ func (l *logger) Sync() error {
 	return l.zapLogger.Sync()
 }
 
+// logWithStack logs a message with optional stack trace information for error-level logs and above.
 func (l *logger) logWithStack(level zapcore.Level, msg string, fields ...zap.Field) {
-	if level >= zapcore.ErrorLevel {
-		pc, file, line, ok := runtime.Caller(2)
-		if ok {
-			fn := runtime.FuncForPC(pc)
-			if fn != nil {
-				stacktrace := zap.Dict("source",
-					zap.String("path", file),
-					zap.Int("line", line),
-					zap.String("func", fn.Name()),
-				)
-				fields = append(fields, stacktrace)
-			}
+	// For non-error levels, log directly without stack trace
+	if level < zapcore.ErrorLevel {
+		if ce := l.zapLogger.Check(level, msg); ce != nil {
+			ce.Write(fields...)
 		}
-		l.zapLogger.Check(level, msg).Write(fields...)
-	} else {
-		l.zapLogger.Check(level, msg).Write(fields...)
+		return
+	}
+
+	// For error and above, capture caller information
+	pc, file, line, ok := runtime.Caller(2)
+	if ok {
+		if fn := runtime.FuncForPC(pc); fn != nil {
+			stacktrace := zap.Dict("source",
+				zap.String("path", file),
+				zap.Int("line", line),
+				zap.String("func", fn.Name()),
+			)
+			fields = append(fields, stacktrace)
+		}
+	}
+
+	// Log with stack trace
+	if ce := l.zapLogger.Check(level, msg); ce != nil {
+		ce.Write(fields...)
 	}
 }
