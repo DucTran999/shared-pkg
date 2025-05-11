@@ -168,8 +168,8 @@ func Test_DPanicInDevelopment(t *testing.T) {
 		if r := recover(); r != nil {
 			logInst.Error("example dpanic log", zap.Any("stack", r))
 			panicOccurred = true
-			_ = logInst.Sync()
 		}
+		_ = logInst.Sync()
 		require.True(t, panicOccurred, "Expected panic did not occur in Staging environment")
 	}()
 
@@ -191,8 +191,8 @@ func Test_DPanicNotInDevelopment(t *testing.T) {
 		if r := recover(); r != nil {
 			logInst.Error("example dpanic log", zap.Any("stack", r))
 			panicOccurred = true
-			_ = logInst.Sync()
 		}
+		_ = logInst.Sync()
 		require.False(t, panicOccurred, "Expected panic did not occur in prod environment")
 	}()
 
