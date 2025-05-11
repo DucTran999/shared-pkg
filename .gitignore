@@ -1,8 +1,7 @@
 .vscode
 
 .docker
-logger/examples/logs
-
+logs
 cmd
 
 go.sum
