@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/DucTran999/shared-pkg/logger"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 )
 
@@ -60,6 +61,7 @@ func Test_Panic(t *testing.T) {
 	defer func() {
 		if r := recover(); r != nil {
 			logInst.Error("example panic log", zap.Any("stack", r))
+			require.NotNil(t, r)
 		}
 	}()
 
@@ -80,6 +82,7 @@ func Test_Panicf(t *testing.T) {
 	defer func() {
 		if r := recover(); r != nil {
 			logInst.Error("example panic log", zap.Any("stack", r))
+			require.NotNil(t, r)
 		}
 	}()
 
@@ -100,6 +103,7 @@ func Test_DPanic(t *testing.T) {
 	defer func() {
 		if r := recover(); r != nil {
 			logInst.Error("example panic log", zap.Any("stack", r))
+			require.NotNil(t, r)
 		}
 	}()
 
@@ -120,6 +124,7 @@ func Test_DPanicf(t *testing.T) {
 	defer func() {
 		if r := recover(); r != nil {
 			logInst.Error("example panic log", zap.Any("stack", r))
+			require.NotNil(t, r)
 		}
 	}()
 
