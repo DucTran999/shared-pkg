@@ -5,7 +5,7 @@ type contextKey string
 
 const (
 	// Env
-	Development = "development"
+	Development = "develop"
 	Testing     = "testing"
 	Staging     = "staging"
 	Production  = "production"

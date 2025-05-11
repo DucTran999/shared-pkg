@@ -10,11 +10,26 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// logger is an implementation of the ILogger interface,
+// wrapping both a structured zap.Logger and a sugared logger for formatted output.
 type logger struct {
 	zapLogger   *zap.Logger
 	sugarLogger *zap.SugaredLogger
 }
 
+// NewLogger creates and returns a new ILogger instance configured
+// according to the provided Config.
+//
+// The logger uses a custom zapcore and applies sampling in production
+// environments to limit the volume of logs. In development mode,
+// it enables development-specific options (like DPanic triggering).
+//
+// Parameters:
+//   - conf: Config struct defining the logging environment, output settings, etc.
+//
+// Returns:
+//   - ILogger: a structured and sugared logger instance
+//   - error: if any error occurs during logger initialization
 func NewLogger(conf Config) (ILogger, error) {
 	// Create the base zap core
 	core := newZapCore(conf)
@@ -25,16 +40,14 @@ func NewLogger(conf Config) (ILogger, error) {
 			core,
 			time.Second, // interval
 			100,         // log first 100 entries
-			100,         // thereafter log zero entires within the interval
+			100,         // thereafter log zero entries within the interval
 		)
 	}
 
-	zapLog := zap.New(
-		core,
-		zap.AddCaller(),
-		// zap.AddCallerSkip(1),
-		zap.AddStacktrace(zap.ErrorLevel),
-	)
+	zapLog := zap.New(core)
+	if conf.Environment == Development {
+		zapLog = zapLog.WithOptions(zap.Development())
+	}
 
 	return &logger{
 		zapLogger:   zapLog,
@@ -42,61 +55,77 @@ func NewLogger(conf Config) (ILogger, error) {
 	}, nil
 }
 
+// Info logs a message at InfoLevel.
 func (l *logger) Info(msg string, fields ...zap.Field) {
 	l.zapLogger.Info(msg, fields...)
 }
 
+// Warn logs a message at WarnLevel.
 func (l *logger) Warn(msg string, fields ...zap.Field) {
 	l.zapLogger.Warn(msg, fields...)
 }
 
+// Error logs a message at ErrorLevel and includes a stack trace.
 func (l *logger) Error(msg string, fields ...zap.Field) {
 	l.logWithStack(zapcore.ErrorLevel, msg, fields...)
 }
 
+// Debug logs a message at DebugLevel.
 func (l *logger) Debug(msg string, fields ...zap.Field) {
 	l.zapLogger.Debug(msg, fields...)
 }
 
+// Panic logs a message at PanicLevel and then panics. Includes a stack trace.
 func (l *logger) Panic(msg string, fields ...zap.Field) {
 	l.logWithStack(zapcore.PanicLevel, msg, fields...)
 }
 
+// DPanic logs a message at DPanicLevel.
+// In development, it panics. In production, it only logs. Includes a stack trace.
 func (l *logger) DPanic(msg string, fields ...zap.Field) {
 	l.logWithStack(zapcore.DPanicLevel, msg, fields...)
 }
 
+// Fatal logs a message at FatalLevel and then calls os.Exit(1). Includes a stack trace.
 func (l *logger) Fatal(msg string, fields ...zap.Field) {
 	l.logWithStack(zapcore.FatalLevel, msg, fields...)
 }
 
+// Infof logs a formatted message at InfoLevel.
 func (l *logger) Infof(template string, args ...any) {
 	l.sugarLogger.Infof(template, args...)
 }
 
+// Warnf logs a formatted message at WarnLevel.
 func (l *logger) Warnf(template string, args ...any) {
 	l.sugarLogger.Warnf(template, args...)
 }
 
+// Errorf logs a formatted message at ErrorLevel and includes a stack trace.
 func (l *logger) Errorf(template string, args ...any) {
 	msg := fmt.Sprintf(template, args...)
 	l.logWithStack(zapcore.ErrorLevel, msg)
 }
 
+// Debugf logs a formatted message at DebugLevel.
 func (l *logger) Debugf(template string, args ...any) {
 	l.sugarLogger.Debugf(template, args...)
 }
 
+// Panicf logs a formatted message at PanicLevel and panics. Includes a stack trace.
 func (l *logger) Panicf(template string, args ...any) {
 	msg := fmt.Sprintf(template, args...)
 	l.logWithStack(zapcore.PanicLevel, msg)
 }
 
+// DPanicf logs a formatted message at DPanicLevel. Includes a stack trace.
+// Panics in development mode.
 func (l *logger) DPanicf(template string, args ...any) {
 	msg := fmt.Sprintf(template, args...)
 	l.logWithStack(zapcore.DPanicLevel, msg)
 }
 
+// Fatalf logs a formatted message at FatalLevel and exits the program. Includes a stack trace.
 func (l *logger) Fatalf(template string, args ...any) {
 	msg := fmt.Sprintf(template, args...)
 	l.logWithStack(zapcore.FatalLevel, msg)
