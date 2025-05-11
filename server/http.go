@@ -46,9 +46,7 @@ func (s *httpServer) Stop(ctx context.Context) error {
 // GracefulShutdown handles OS signals and performs a graceful shutdown of the server.
 func GracefulShutdown(shutdownTasks ...func(ctx context.Context) error) {
 	const shutdownTimeout = 5 * time.Second
-
-	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339, NoColor: false}
-	logger := zerolog.New(output).With().Timestamp().Logger()
+	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
 
 	// Listen for SIGINT or SIGTERM
 	shutdownCtx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

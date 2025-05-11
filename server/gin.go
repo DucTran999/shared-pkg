@@ -70,13 +70,8 @@ func NewGinHttpServer(router *gin.Engine, config ServerConfig) (*ginServer, erro
 		IdleTimeout:       cleanConfig.IdleTimeout,
 	}
 
-	// Set up logger with formatted output and timestamps
-	output := zerolog.ConsoleWriter{
-		Out:        os.Stdout,    // Output to standard output
-		TimeFormat: time.RFC3339, // Format for timestamps
-		NoColor:    false,        // Enable color in logs
-	}
-	logger := zerolog.New(output).With().Timestamp().Logger()
+	zerolog.TimeFieldFormat = time.RFC3339
+	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
 
 	return &ginServer{
 		httpServer: &httpServer{
