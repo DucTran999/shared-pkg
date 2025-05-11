@@ -8,5 +8,5 @@ const (
 	Production  = "production"
 
 	// key extract from context
-	requestIDKeyCtx = "requestID"
+	RequestIDKeyCtx = "request_id"
 )

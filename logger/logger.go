@@ -105,11 +105,11 @@ func (l *logger) Fatalf(template string, args ...any) {
 // FromContext retrieves data from the context and returns a logger with those fields
 func (l *logger) FromContext(ctx context.Context) ILogger {
 	// Extract the request ID from the context
-	requestID, ok := ctx.Value(requestIDKeyCtx).(string)
+	requestID, ok := ctx.Value(RequestIDKeyCtx).(string)
 
 	// If a non-empty request ID exists, attach it to the logger
 	if ok && requestID != "" {
-		newLogger := l.zapLogger.With(zap.String(requestIDKeyCtx, requestID))
+		newLogger := l.zapLogger.With(zap.String(RequestIDKeyCtx, requestID))
 		return &logger{zapLogger: newLogger, sugarLogger: newLogger.Sugar()}
 	}
 
@@ -123,14 +123,6 @@ func (l *logger) Sync() error {
 
 // logWithStack logs a message with optional stack trace information for error-level logs and above.
 func (l *logger) logWithStack(level zapcore.Level, msg string, fields ...zap.Field) {
-	// For non-error levels, log directly without stack trace
-	if level < zapcore.ErrorLevel {
-		if ce := l.zapLogger.Check(level, msg); ce != nil {
-			ce.Write(fields...)
-		}
-		return
-	}
-
 	// For error and above, capture caller information
 	pc, file, line, ok := runtime.Caller(2)
 	if ok {
