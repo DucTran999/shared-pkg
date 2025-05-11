@@ -109,7 +109,7 @@ func (l *logger) FromContext(ctx context.Context) ILogger {
 
 	// If a non-empty request ID exists, attach it to the logger
 	if ok && requestID != "" {
-		newLogger := l.zapLogger.With(zap.String(RequestIDKeyCtx, requestID))
+		newLogger := l.zapLogger.With(zap.String(string(RequestIDKeyCtx), requestID))
 		return &logger{zapLogger: newLogger, sugarLogger: newLogger.Sugar()}
 	}
 

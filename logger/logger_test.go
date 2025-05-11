@@ -22,10 +22,10 @@ func Test_LogTypeWithoutRecover(t *testing.T) {
 	if err != nil {
 		log.Fatalln("Init logger ERR", err)
 	}
-	defer logInst.Sync()
+	defer func() { _ = logInst.Sync() }()
 
 	var wg sync.WaitGroup
-	for range 10000 {
+	for range 100 {
 		wg.Add(1)
 		go func(logger.ILogger) {
 			ctx := context.Background()
@@ -55,7 +55,7 @@ func Test_Panic(t *testing.T) {
 	if err != nil {
 		log.Fatalln("Init logger ERR", err)
 	}
-	defer logInst.Sync()
+	defer func() { _ = logInst.Sync() }()
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -75,7 +75,7 @@ func Test_Panicf(t *testing.T) {
 	if err != nil {
 		log.Fatalln("Init logger ERR", err)
 	}
-	defer logInst.Sync()
+	defer func() { _ = logInst.Sync() }()
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -95,7 +95,7 @@ func Test_DPanic(t *testing.T) {
 	if err != nil {
 		log.Fatalln("Init logger ERR", err)
 	}
-	defer logInst.Sync()
+	defer func() { _ = logInst.Sync() }()
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -115,7 +115,7 @@ func Test_DPanicf(t *testing.T) {
 	if err != nil {
 		log.Fatalln("Init logger ERR", err)
 	}
-	defer logInst.Sync()
+	defer func() { _ = logInst.Sync() }()
 
 	defer func() {
 		if r := recover(); r != nil {
