@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func Test_LogTypeWithoutRecover(t *testing.T) {
+func Test_LogFromMultiGoRoutine(t *testing.T) {
 	conf := logger.Config{
 		Environment: logger.Production,
 		LogToFile:   true,
@@ -47,6 +47,66 @@ func Test_LogTypeWithoutRecover(t *testing.T) {
 	wg.Wait()
 }
 
+func Test_LogInfo(t *testing.T) {
+	conf := logger.Config{
+		Environment: logger.Development,
+	}
+
+	logInst, err := logger.NewLogger(conf)
+	if err != nil {
+		t.Fatalf("Init logger ERR=%v", err)
+	}
+	defer func() { _ = logInst.Sync() }()
+
+	logInst.Info("example info log")
+	logInst.Infof("example info log %s", "test")
+}
+
+func Test_LogWarn(t *testing.T) {
+	conf := logger.Config{
+		Environment: logger.Development,
+	}
+
+	logInst, err := logger.NewLogger(conf)
+	if err != nil {
+		t.Fatalf("Init logger ERR=%v", err)
+	}
+	defer func() { _ = logInst.Sync() }()
+
+	logInst.Warn("example warn log")
+	logInst.Warnf("example warn log %s", "test")
+}
+
+func Test_LogError(t *testing.T) {
+	conf := logger.Config{
+		Environment: logger.Development,
+	}
+
+	logInst, err := logger.NewLogger(conf)
+	if err != nil {
+		t.Fatalf("Init logger ERR=%v", err)
+	}
+	defer func() { _ = logInst.Sync() }()
+
+	logInst.Error("example error log")
+	logInst.Errorf("example error log %s", "test")
+}
+
+func Test_LogDebug(t *testing.T) {
+	conf := logger.Config{
+		Environment: logger.Development,
+	}
+
+	logInst, err := logger.NewLogger(conf)
+	if err != nil {
+		t.Fatalf("Init logger ERR=%v", err)
+	}
+	defer func() { _ = logInst.Sync() }()
+
+	logInst.Debug("example debug log")
+	logInst.Debugf("example debug log %s", "test")
+}
+
 func Test_Panic(t *testing.T) {
 	conf := logger.Config{
 		Environment: logger.Production,
@@ -56,7 +116,6 @@ func Test_Panic(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Init logger ERR=%v", err)
 	}
-	defer func() { _ = logInst.Sync() }()
 
 	panicOccurred := false
 	defer func() {
@@ -64,7 +123,8 @@ func Test_Panic(t *testing.T) {
 			logInst.Error("example panic log", zap.Any("stack", r))
 			panicOccurred = true
 		}
-		require.True(t, panicOccurred, "Expected panic did not occur in Staging environment")
+		_ = logInst.Sync()
+		require.True(t, panicOccurred, "Expected panic occur in prod environment")
 	}()
 
 	logInst.Panic("example panic log", zap.String("stack", "stack trace"))
@@ -79,7 +139,6 @@ func Test_Panicf(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Init logger ERR=%v", err)
 	}
-	defer func() { _ = logInst.Sync() }()
 
 	panicOccurred := false
 	defer func() {
@@ -87,22 +146,22 @@ func Test_Panicf(t *testing.T) {
 			logInst.Error("example panic log", zap.Any("stack", r))
 			panicOccurred = true
 		}
+		_ = logInst.Sync()
 		require.True(t, panicOccurred, "Expected panic did not occur in Staging environment")
 	}()
 
 	logInst.Panicf("example panic log %v", errors.New("panic test"))
 }
 
-func Test_DPanic(t *testing.T) {
+func Test_DPanicInDevelopment(t *testing.T) {
 	conf := logger.Config{
-		Environment: logger.Staging,
+		Environment: logger.Development,
 	}
 
 	logInst, err := logger.NewLogger(conf)
 	if err != nil {
 		t.Fatalf("Init logger ERR=%v", err)
 	}
-	defer func() { _ = logInst.Sync() }()
 
 	panicOccurred := false
 	defer func() {
@@ -110,13 +169,60 @@ func Test_DPanic(t *testing.T) {
 			logInst.Error("example dpanic log", zap.Any("stack", r))
 			panicOccurred = true
 		}
+		_ = logInst.Sync()
 		require.True(t, panicOccurred, "Expected panic did not occur in Staging environment")
 	}()
 
 	logInst.DPanic("example dpanic log")
 }
 
-func Test_DPanicf(t *testing.T) {
+func Test_DPanicNotInDevelopment(t *testing.T) {
+	conf := logger.Config{
+		Environment: logger.Production,
+	}
+
+	logInst, err := logger.NewLogger(conf)
+	if err != nil {
+		t.Fatalf("Init logger ERR=%v", err)
+	}
+
+	panicOccurred := false
+	defer func() {
+		if r := recover(); r != nil {
+			logInst.Error("example dpanic log", zap.Any("stack", r))
+			panicOccurred = true
+		}
+		_ = logInst.Sync()
+		require.False(t, panicOccurred, "Expected panic did not occur in prod environment")
+	}()
+
+	logInst.DPanic("example dpanic log")
+}
+
+func Test_DPanicfInDevelopment(t *testing.T) {
+	conf := logger.Config{
+		Environment: logger.Development,
+	}
+
+	logInst, err := logger.NewLogger(conf)
+	if err != nil {
+		t.Fatalf("Init logger ERR=%v", err)
+	}
+
+	panicOccurred := false
+	defer func() {
+		if r := recover(); r != nil {
+			logInst.Error("example dpanicd log", zap.Any("stack", r))
+			panicOccurred = true
+		}
+		_ = logInst.Sync()
+		require.True(t, panicOccurred, "Expected panic  occur in Development environment")
+	}()
+
+	logInst.DPanicf("example dpanicf log err:%v", errors.New("panic test"))
+}
+
+func Test_DPanicfNotInDevelopment(t *testing.T) {
 	conf := logger.Config{
 		Environment: logger.Staging,
 	}
@@ -125,7 +231,6 @@ func Test_DPanicf(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Init logger ERR=%v", err)
 	}
-	defer func() { _ = logInst.Sync() }()
 
 	panicOccurred := false
 	defer func() {
@@ -133,7 +238,8 @@ func Test_DPanicf(t *testing.T) {
 			logInst.Error("example dpanicd log", zap.Any("stack", r))
 			panicOccurred = true
 		}
-		require.True(t, panicOccurred, "Expected panic did not occur in Staging environment")
+		_ = logInst.Sync()
+		require.False(t, panicOccurred, "Expected panic not occur in stage environment")
 	}()
 
 	logInst.DPanicf("example dpanicf log err:%v", errors.New("panic test"))
