@@ -17,6 +17,7 @@ package main
 import (
     "github.com/DucTran999/shared-pkg/logger"
     "os"
+    "log"
 )
 
 func main() {
