@@ -54,15 +54,17 @@ func Test_Panic(t *testing.T) {
 
 	logInst, err := logger.NewLogger(conf)
 	if err != nil {
-		log.Fatalln("Init logger ERR", err)
+		t.Fatalf("Init logger ERR=%v", err)
 	}
 	defer func() { _ = logInst.Sync() }()
 
+	panicOccurred := false
 	defer func() {
 		if r := recover(); r != nil {
 			logInst.Error("example panic log", zap.Any("stack", r))
-			require.NotNil(t, r)
+			panicOccurred = true
 		}
+		require.True(t, panicOccurred, "Expected panic did not occur in Staging environment")
 	}()
 
 	logInst.Panic("example panic log", zap.String("stack", "stack trace"))
@@ -75,15 +77,17 @@ func Test_Panicf(t *testing.T) {
 
 	logInst, err := logger.NewLogger(conf)
 	if err != nil {
-		log.Fatalln("Init logger ERR", err)
+		t.Fatalf("Init logger ERR=%v", err)
 	}
 	defer func() { _ = logInst.Sync() }()
 
+	panicOccurred := false
 	defer func() {
 		if r := recover(); r != nil {
 			logInst.Error("example panic log", zap.Any("stack", r))
-			require.NotNil(t, r)
+			panicOccurred = true
 		}
+		require.True(t, panicOccurred, "Expected panic did not occur in Staging environment")
 	}()
 
 	logInst.Panicf("example panic log %v", errors.New("panic test"))
@@ -96,15 +100,17 @@ func Test_DPanic(t *testing.T) {
 
 	logInst, err := logger.NewLogger(conf)
 	if err != nil {
-		log.Fatalln("Init logger ERR", err)
+		t.Fatalf("Init logger ERR=%v", err)
 	}
 	defer func() { _ = logInst.Sync() }()
 
+	panicOccurred := false
 	defer func() {
 		if r := recover(); r != nil {
-			logInst.Error("example panic log", zap.Any("stack", r))
-			require.NotNil(t, r)
+			logInst.Error("example dpanic log", zap.Any("stack", r))
+			panicOccurred = true
 		}
+		require.True(t, panicOccurred, "Expected panic did not occur in Staging environment")
 	}()
 
 	logInst.DPanic("example dpanic log")
@@ -117,15 +123,17 @@ func Test_DPanicf(t *testing.T) {
 
 	logInst, err := logger.NewLogger(conf)
 	if err != nil {
-		log.Fatalln("Init logger ERR", err)
+		t.Fatalf("Init logger ERR=%v", err)
 	}
 	defer func() { _ = logInst.Sync() }()
 
+	panicOccurred := false
 	defer func() {
 		if r := recover(); r != nil {
-			logInst.Error("example panic log", zap.Any("stack", r))
-			require.NotNil(t, r)
+			logInst.Error("example dpanicd log", zap.Any("stack", r))
+			panicOccurred = true
 		}
+		require.True(t, panicOccurred, "Expected panic did not occur in Staging environment")
 	}()
 
 	logInst.DPanicf("example dpanicf log err:%v", errors.New("panic test"))
