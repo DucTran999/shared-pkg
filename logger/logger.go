@@ -2,6 +2,8 @@ package logger
 
 import (
 	"context"
+	"fmt"
+	"runtime"
 	"time"
 
 	"go.uber.org/zap"
@@ -30,7 +32,7 @@ func NewLogger(conf Config) (ILogger, error) {
 	zapLog := zap.New(
 		core,
 		zap.AddCaller(),
-		zap.AddCallerSkip(1),
+		// zap.AddCallerSkip(1),
 		zap.AddStacktrace(zap.ErrorLevel),
 	)
 
@@ -49,7 +51,7 @@ func (l *logger) Warn(msg string, fields ...zap.Field) {
 }
 
 func (l *logger) Error(msg string, fields ...zap.Field) {
-	l.zapLogger.Error(msg, fields...)
+	l.logWithStack(zapcore.ErrorLevel, msg, fields...)
 }
 
 func (l *logger) Debug(msg string, fields ...zap.Field) {
@@ -57,15 +59,15 @@ func (l *logger) Debug(msg string, fields ...zap.Field) {
 }
 
 func (l *logger) Panic(msg string, fields ...zap.Field) {
-	l.zapLogger.Panic(msg, fields...)
+	l.logWithStack(zapcore.PanicLevel, msg, fields...)
 }
 
 func (l *logger) DPanic(msg string, fields ...zap.Field) {
-	l.zapLogger.DPanic(msg, fields...)
+	l.logWithStack(zapcore.DPanicLevel, msg, fields...)
 }
 
 func (l *logger) Fatal(msg string, fields ...zap.Field) {
-	l.zapLogger.Fatal(msg, fields...)
+	l.logWithStack(zapcore.FatalLevel, msg, fields...)
 }
 
 func (l *logger) Infof(template string, args ...any) {
@@ -77,7 +79,8 @@ func (l *logger) Warnf(template string, args ...any) {
 }
 
 func (l *logger) Errorf(template string, args ...any) {
-	l.sugarLogger.Errorf(template, args...)
+	msg := fmt.Sprintf(template, args...)
+	l.logWithStack(zapcore.ErrorLevel, msg)
 }
 
 func (l *logger) Debugf(template string, args ...any) {
@@ -85,15 +88,18 @@ func (l *logger) Debugf(template string, args ...any) {
 }
 
 func (l *logger) Panicf(template string, args ...any) {
-	l.sugarLogger.Panicf(template, args...)
+	msg := fmt.Sprintf(template, args...)
+	l.logWithStack(zapcore.PanicLevel, msg)
 }
 
 func (l *logger) DPanicf(template string, args ...any) {
-	l.sugarLogger.DPanicf(template, args...)
+	msg := fmt.Sprintf(template, args...)
+	l.logWithStack(zapcore.DPanicLevel, msg)
 }
 
 func (l *logger) Fatalf(template string, args ...any) {
-	l.sugarLogger.Fatalf(template, args...)
+	msg := fmt.Sprintf(template, args...)
+	l.logWithStack(zapcore.FatalLevel, msg)
 }
 
 // FromContext retrieves data from the context and returns a logger with those fields
@@ -113,4 +119,33 @@ func (l *logger) FromContext(ctx context.Context) ILogger {
 
 func (l *logger) Sync() error {
 	return l.zapLogger.Sync()
+}
+
+// logWithStack logs a message with optional stack trace information for error-level logs and above.
+func (l *logger) logWithStack(level zapcore.Level, msg string, fields ...zap.Field) {
+	// For non-error levels, log directly without stack trace
+	if level < zapcore.ErrorLevel {
+		if ce := l.zapLogger.Check(level, msg); ce != nil {
+			ce.Write(fields...)
+		}
+		return
+	}
+
+	// For error and above, capture caller information
+	pc, file, line, ok := runtime.Caller(2)
+	if ok {
+		if fn := runtime.FuncForPC(pc); fn != nil {
+			stacktrace := zap.Dict("source",
+				zap.String("path", file),
+				zap.Int("line", line),
+				zap.String("func", fn.Name()),
+			)
+			fields = append(fields, stacktrace)
+		}
+	}
+
+	// Log with stack trace
+	if ce := l.zapLogger.Check(level, msg); ce != nil {
+		ce.Write(fields...)
+	}
 }
