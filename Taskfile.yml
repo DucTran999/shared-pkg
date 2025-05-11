@@ -1,0 +1,21 @@
+version: '3'
+
+dotenv:
+  - ".env"
+
+tasks:
+  default: 
+    desc: 'show all available tasks'
+    cmds:
+      - task --list-all
+    silent: true
+
+  tidy:
+    desc: install pkg listed in go.mod
+    cmds:
+      -  go mod tidy
+
+  coverage: 
+    desc: run unit test and force coverage > 80%
+    cmds:
+      - ./scripts/coverage.sh
