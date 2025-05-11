@@ -139,7 +139,6 @@ func Test_Panicf(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Init logger ERR=%v", err)
 	}
-	defer func() { _ = logInst.Sync() }()
 
 	panicOccurred := false
 	defer func() {
@@ -147,6 +146,7 @@ func Test_Panicf(t *testing.T) {
 			logInst.Error("example panic log", zap.Any("stack", r))
 			panicOccurred = true
 		}
+		_ = logInst.Sync()
 		require.True(t, panicOccurred, "Expected panic did not occur in Staging environment")
 	}()
 
@@ -188,10 +188,10 @@ func Test_DPanicNotInDevelopment(t *testing.T) {
 
 	panicOccurred := false
 	defer func() {
-		_ = logInst.Sync()
 		if r := recover(); r != nil {
 			logInst.Error("example dpanic log", zap.Any("stack", r))
 			panicOccurred = true
+			_ = logInst.Sync()
 		}
 		require.False(t, panicOccurred, "Expected panic did not occur in prod environment")
 	}()
