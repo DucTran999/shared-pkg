@@ -4,11 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rs/zerolog"
 )
 
 var (
@@ -70,13 +68,9 @@ func NewGinHttpServer(router *gin.Engine, config ServerConfig) (*ginServer, erro
 		IdleTimeout:       cleanConfig.IdleTimeout,
 	}
 
-	zerolog.TimeFieldFormat = time.RFC3339
-	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
-
 	return &ginServer{
 		httpServer: &httpServer{
 			server: server,
-			logger: &logger,
 		},
 	}, nil
 }
