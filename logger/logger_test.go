@@ -273,8 +273,12 @@ func main() {
 	logInst.Fatal("example fatal log")
 }
 `
+	// Ensure the subprocess directory exists
+	err := os.MkdirAll("./subprocess", 0755)
+	require.NoError(t, err)
+
 	// Ghi code vào file tạm
-	err := os.WriteFile("./subprocess/fatal_main.go", []byte(code), 0600)
+	err = os.WriteFile("./subprocess/fatal_main.go", []byte(code), 0600)
 	require.NoError(t, err)
 	defer os.Remove("./subprocess/fatal_main.go")
 
@@ -317,8 +321,12 @@ func main() {
 	logInst.Fatalf("example fatal log")
 }
 `
+	// Ensure the subprocess directory exists
+	err := os.MkdirAll("./subprocess", 0755)
+	require.NoError(t, err)
+
 	// Ghi code vào file tạm
-	err := os.WriteFile("./subprocess/fatalf_main.go", []byte(code), 0600)
+	err = os.WriteFile("./subprocess/fatalf_main.go", []byte(code), 0600)
 	require.NoError(t, err)
 	defer os.Remove("./subprocess/fatalf_main.go")
 
