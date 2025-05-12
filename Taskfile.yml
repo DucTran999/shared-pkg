@@ -19,3 +19,13 @@ tasks:
     desc: run unit test and force coverage > 80%
     cmds:
       - ./scripts/coverage.sh
+
+  lint:
+    desc: run golangci-lint
+    cmds:
+      - golangci-lint run --timeout 5m --config .golangci.yml ./logger/
+      
+  deps:
+    desc: install dependencies
+    cmds:
+      - go install github.com/vektra/mockery/v2@v2.46.3

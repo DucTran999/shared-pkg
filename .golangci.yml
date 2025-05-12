@@ -26,18 +26,12 @@ linters:
     # Checks types passed to the json encoding functions. Reports unsupported types and optionally reports occations, where the check for the returned error can be omitted. [fast: false, auto-fix: false]
     # FUTURE: use asap, because we use json alot. nice feature is possibility to check if err check is required
     - errchkjson
-    # execinquery is a linter about query string checker in Query function which reads your Go src files and warning it finds
-    # FUTURE: might find some errors in sql queries
-    - execinquery
     # Checks if all struct's fields are initialized [fast: false, auto-fix: false]
     # deprecated
     #    - exhaustivestruct
     # Checks if all structure fields are initialized
     # Not all fields have to be initialized
     - exhaustruct
-    # checks for pointers to enclosing loop variables [fast: false, auto-fix: false]
-    # FUTURE: finds bugs hard to find, could occur much later
-    - exportloopref
     # Forbids identifiers [fast: true, auto-fix: false]
     # see no reason. allows to define regexp which are not allowed to use
     - forbidigo
@@ -62,20 +56,11 @@ linters:
     # Golang linter to check the errors handling expressions [fast: false, auto-fix: false]
     # Not used in favore of errorlint
     #    - goerr113
-    # Gofmt checks whether code was gofmt-ed. By default this tool runs with -s option to check for code simplification [fast: true, auto-fix: true]
-    # ignored in favor of goimports
-    - gofmt
-    # Gofumpt checks whether code was gofumpt-ed. [fast: true, auto-fix: true]
-    # ignored in favor of goimports
-    - gofumpt
     # Checks is file header matches to pattern [fast: true, auto-fix: false]
     # ignored because we don't write licenses as headers
     - goheader
     # In addition to fixing imports, goimports also formats your code in the same style as gofmt. [fast: true, auto-fix: true]
     # ignored in favor of gci
-    - goimports
-    #deprecated]: Golint differs from gofmt. Gofmt reformats Go source code, whereas golint prints out style mistakes [fast: false, auto-fix: false]
-    # ignored in favor of goimports
     #    - golint
     # An analyzer to detect magic numbers. [fast: true, auto-fix: false]
     # FUTURE: not that critical at the moment
@@ -155,15 +140,9 @@ linters:
     # Finds unused struct fields [fast: false, auto-fix: false]
     # deprecated, replaced by unused
     #    - structcheck
-    # Stylecheck is a replacement for golint [fast: false, auto-fix: false]
-    # we use goimports, and staticcheck instead
-    - stylecheck
     # Checks the struct tags. [fast: true, auto-fix: false]
     # FUTURE: would help for new structs
     - tagliatelle
-    # tenv is analyzer that detects using os.Setenv instead of t.Setenv since Go1.17 [fast: false, auto-fix: false]
-    # FUTURE: currently are no env vars set
-    - tenv
     # linter checks if examples are testable (have an expected output)
     # FUTURE: as soon as examples are added
     - testableexamples
@@ -200,8 +179,6 @@ linters:
     # Whitespace Linter - Forces you to use empty lines! [fast: true, auto-fix: false]
     # FUTURE: improves code quality by allowing and blocking line breaks
     - wsl
-    # disable because deprecated: used mnd package instead
-    - gomnd
     # An analyzer to detect magic numbers.
     # FUTURE: improve code quality by give semantic name for number.
     - mnd
@@ -219,7 +196,6 @@ linters:
     # FUTURE: can apply this rules when this syntax are family to almost developer. This syntax only apply for go 1.22+
     - intrange
     - tagalign
-    - gci
 
   exclusions:
     rules:
