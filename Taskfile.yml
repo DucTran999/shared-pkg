@@ -19,3 +19,8 @@ tasks:
     desc: run unit test and force coverage > 80%
     cmds:
       - ./scripts/coverage.sh
+
+  deps:
+    desc: install dependencies
+    cmds:
+      - go install github.com/vektra/mockery/v2@v2.46.3
