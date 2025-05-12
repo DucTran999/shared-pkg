@@ -6,4 +6,6 @@ cmd
 
 go.sum
 
-coverage
+# coverage
+coverage.html
+coverage.out

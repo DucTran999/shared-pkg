@@ -1,6 +1,9 @@
 # Logger Package
 This package wraps zerolog to simplify configuration and logging in Go applications.
 
+## Coverage
+[![codecov](https://codecov.io/gh/DucTran999/shared-pkg/branch/master/graph/badge.svg)](https://codecov.io/gh/DucTran999/shared-pkg)
+
 ## Features
 - Configurable log levels: `Debug`, `Info`, `Warn`, `Error`, `Fatal`, `Panic`, `Dpanic`
 - JSON or human-readable log formats (Console).
