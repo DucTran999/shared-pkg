@@ -274,8 +274,8 @@ func main() {
 }
 `
 	// Ghi code vào file tạm
-	err := os.WriteFile("./subprocess/fatal_main.go", []byte(code), 0644)
-	assert.NoError(t, err)
+	err := os.WriteFile("./subprocess/fatal_main.go", []byte(code), 0600)
+	require.NoError(t, err)
 	defer os.Remove("./subprocess/fatal_main.go")
 
 	cmd := exec.Command("go", "run", "./subprocess/fatal_main.go")
@@ -284,9 +284,11 @@ func main() {
 	cmd.Stderr = &out
 	err = cmd.Run()
 
-	exitErr, ok := err.(*exec.ExitError)
+	var e *exec.ExitError
+	ok := errors.As(err, &e)
+
 	assert.True(t, ok)
-	assert.Equal(t, 1, exitErr.ExitCode())
+	assert.Equal(t, 1, e.ExitCode())
 	assert.Contains(t, out.String(), `"msg":"example fatal log"`)
 	assert.Contains(t, out.String(), `"level":"FATAL"`)
 }
@@ -316,8 +318,8 @@ func main() {
 }
 `
 	// Ghi code vào file tạm
-	err := os.WriteFile("./subprocess/fatalf_main.go", []byte(code), 0644)
-	assert.NoError(t, err)
+	err := os.WriteFile("./subprocess/fatalf_main.go", []byte(code), 0600)
+	require.NoError(t, err)
 	defer os.Remove("./subprocess/fatalf_main.go")
 
 	cmd := exec.Command("go", "run", "./subprocess/fatalf_main.go")
@@ -326,9 +328,11 @@ func main() {
 	cmd.Stderr = &out
 	err = cmd.Run()
 
-	exitErr, ok := err.(*exec.ExitError)
+	var e *exec.ExitError
+	ok := errors.As(err, &e)
+
 	assert.True(t, ok)
-	assert.Equal(t, 1, exitErr.ExitCode())
+	assert.Equal(t, 1, e.ExitCode())
 	assert.Contains(t, out.String(), `"msg":"example fatal log"`)
 	assert.Contains(t, out.String(), `"level":"FATAL"`)
 }

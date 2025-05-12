@@ -20,6 +20,11 @@ tasks:
     cmds:
       - ./scripts/coverage.sh
 
+  lint:
+    desc: run golangci-lint
+    cmds:
+      - golangci-lint run --timeout 5m --config .golangci.yml ./logger/
+      
   deps:
     desc: install dependencies
     cmds:
