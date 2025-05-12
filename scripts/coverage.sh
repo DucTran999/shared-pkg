@@ -15,7 +15,7 @@ cyan "🔍 Code coverage analyzing..."
 echo "----------------------------------------------------------------------------------"
 mkdir -p test/coverage
 go test -cover ./logger/... -coverprofile=coverage.out
-go tool cover -html=test/coverage/coverage.out -o test/coverage/coverage.html
+go tool cover -html=coverage.out -o coverage.html
 echo "----------------------------------------------------------------------------------"
 
 total_coverage=$(go tool cover -func=coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
