@@ -1,13 +1,17 @@
 package logger_test
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"log"
+	"os"
+	"os/exec"
 	"sync"
 	"testing"
 
 	"github.com/DucTran999/shared-pkg/logger"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 )
@@ -243,4 +247,88 @@ func Test_DPanicfNotInDevelopment(t *testing.T) {
 	}()
 
 	logInst.DPanicf("example dpanicf log err:%v", errors.New("panic test"))
+}
+
+// Note: Fatal is not tested due to os.Exit(1) behavior, which is handled by zerolog.
+// Logging logic is covered by tests for Info, Error, and other methods.
+func Test_Fatal(t *testing.T) {
+	code := `
+package main
+
+import (
+	"log"
+
+	"github.com/DucTran999/shared-pkg/logger"
+)
+
+func main() {
+	conf := logger.Config{Environment: logger.Production}
+
+	logInst, err := logger.NewLogger(conf)
+	if err != nil {
+		log.Fatalf("Init logger ERR=%v", err)
+	}
+	defer func() { _ = logInst.Sync() }()
+
+	logInst.Fatal("example fatal log")
+}
+`
+	// Ghi code vào file tạm
+	err := os.WriteFile("./subprocess/fatal_main.go", []byte(code), 0644)
+	assert.NoError(t, err)
+	defer os.Remove("./subprocess/fatal_main.go")
+
+	cmd := exec.Command("go", "run", "./subprocess/fatal_main.go")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+	err = cmd.Run()
+
+	exitErr, ok := err.(*exec.ExitError)
+	assert.True(t, ok)
+	assert.Equal(t, 1, exitErr.ExitCode())
+	assert.Contains(t, out.String(), `"msg":"example fatal log"`)
+	assert.Contains(t, out.String(), `"level":"FATAL"`)
+}
+
+// Note: Fatal is not tested due to os.Exit(1) behavior, which is handled by zerolog.
+// Logging logic is covered by tests for Info, Error, and other methods.
+func Test_Fatalf(t *testing.T) {
+	code := `
+package main
+
+import (
+	"log"
+
+	"github.com/DucTran999/shared-pkg/logger"
+)
+
+func main() {
+	conf := logger.Config{Environment: logger.Production}
+
+	logInst, err := logger.NewLogger(conf)
+	if err != nil {
+		log.Fatalf("Init logger ERR=%v", err)
+	}
+	defer func() { _ = logInst.Sync() }()
+
+	logInst.Fatalf("example fatal log")
+}
+`
+	// Ghi code vào file tạm
+	err := os.WriteFile("./subprocess/fatalf_main.go", []byte(code), 0644)
+	assert.NoError(t, err)
+	defer os.Remove("./subprocess/fatalf_main.go")
+
+	cmd := exec.Command("go", "run", "./subprocess/fatalf_main.go")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+	err = cmd.Run()
+
+	exitErr, ok := err.(*exec.ExitError)
+	assert.True(t, ok)
+	assert.Equal(t, 1, exitErr.ExitCode())
+	assert.Contains(t, out.String(), `"msg":"example fatal log"`)
+	assert.Contains(t, out.String(), `"level":"FATAL"`)
 }
