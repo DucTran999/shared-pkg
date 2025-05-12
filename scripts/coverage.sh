@@ -13,7 +13,6 @@ cyan() {
 
 cyan "🔍 Code coverage analyzing..."
 echo "----------------------------------------------------------------------------------"
-mkdir -p test/coverage
 go test -cover ./logger/... -coverprofile=coverage.out
 go tool cover -html=coverage.out -o coverage.html
 echo "----------------------------------------------------------------------------------"
