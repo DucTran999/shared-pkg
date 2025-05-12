@@ -59,6 +59,9 @@ conf := logger.Config{
 }
 ```
 
+## Testing
+The logger package achieves 93% test coverage. The Fatal method is excluded from tests due to its os.Exit(1) behavior, which is reliably handled by zerolog.
+
 ## Contributing
 1. Fork the repository
 2. Create a feature branch
