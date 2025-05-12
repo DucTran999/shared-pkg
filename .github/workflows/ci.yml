@@ -25,7 +25,6 @@ jobs:
       - name: Check lint
         uses: golangci/golangci-lint-action@v6.1.1
         with:
-          version: v1.52.2
           args: run --timeout 5m  --config .golangci.yml ./logger/        
 
   Coverage:
