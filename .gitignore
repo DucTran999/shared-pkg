@@ -6,4 +6,4 @@ cmd
 
 go.sum
 
-coverage
+# coverage
