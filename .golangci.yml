@@ -64,7 +64,7 @@ linters:
     #    - goerr113
     # Gofmt checks whether code was gofmt-ed. By default this tool runs with -s option to check for code simplification [fast: true, auto-fix: true]
     # ignored in favor of goimports
-    - gofmt
+    # - gofmt
     # Gofumpt checks whether code was gofumpt-ed. [fast: true, auto-fix: true]
     # ignored in favor of goimports
     - gofumpt
