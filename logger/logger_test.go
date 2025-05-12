@@ -274,7 +274,7 @@ func main() {
 }
 `
 	// Ensure the subprocess directory exists
-	err := os.MkdirAll("./subprocess", 0755)
+	err := os.MkdirAll("./subprocess", 0750)
 	require.NoError(t, err)
 
 	// Ghi code vào file tạm
@@ -322,7 +322,7 @@ func main() {
 }
 `
 	// Ensure the subprocess directory exists
-	err := os.MkdirAll("./subprocess", 0755)
+	err := os.MkdirAll("./subprocess", 0750)
 	require.NoError(t, err)
 
 	// Ghi code vào file tạm
