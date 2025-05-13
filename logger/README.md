@@ -2,7 +2,12 @@
 This package wraps zerolog to simplify configuration and logging in Go applications.
 
 ## Coverage
-[![codecov](https://codecov.io/gh/DucTran999/shared-pkg/branch/master/graph/badge.svg)](https://codecov.io/gh/DucTran999/shared-pkg75%25-yellow)
+[![codecov](https://codecov.io/gh/DucTran999/shared-pkg/branch/master/graph/badge.svg)](https://codecov.io/gh/DucTran999/shared-pkg/75%25-yellow)
+
+## Installation
+```bash
+go get github.com/DucTran999/shared-pkg/logger
+```
 
 ## Features
 - Configurable log levels: `Debug`, `Info`, `Warn`, `Error`, `Fatal`, `Panic`, `Dpanic`
