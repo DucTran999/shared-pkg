@@ -13,11 +13,12 @@ cyan() {
 
 cyan "🔍 Code coverage analyzing..."
 echo "----------------------------------------------------------------------------------"
-go test -cover ./logger/... -coverprofile=coverage.out
-go tool cover -html=coverage.out -o coverage.html
+mkdir -p test/coverage
+go test -cover ./logger/... -coverprofile=test/coverage/coverage.out
+go tool cover -html=test/coverage/coverage.out -o test/coverage/coverage.html
 echo "----------------------------------------------------------------------------------"
 
-total_coverage=$(go tool cover -func=coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
+total_coverage=$(go tool cover -func=test/coverage/coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
 coverage_threshold=80.0
 comparison=$(echo "$total_coverage >= $coverage_threshold" | bc -l)
 if [ "$comparison" -eq 0 ]; then
