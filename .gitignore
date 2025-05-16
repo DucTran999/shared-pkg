@@ -1,6 +1,7 @@
 .vscode
 
 .docker
+.data
 logs
 cmd
 
