@@ -28,8 +28,7 @@ type Config struct {
 
 func NewCache(config Config) (Cache, error) {
 	if config.isCacheOnMemory {
-		// TODO: Implement in-memory cache
-		return nil, nil
+		return NewRistrettoCache()
 	}
 
 	return NewRedisCache(config)
