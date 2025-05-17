@@ -13,9 +13,10 @@ cyan() {
 
 cyan "🔍 Code coverage analyzing..."
 echo "----------------------------------------------------------------------------------"
-mkdir -p test/coverage
+COVERAGE_DIR="test/coverage"
+mkdir -p "$COVERAGE_DIR"
 go test -cover ./logger/... -coverprofile=test/coverage/coverage.out
-go tool cover -html=test/coverage/coverage.out -o test/coverage/coverage.html
+go tool cover -html="$COVERAGE_DIR/coverage.out" -o "$COVERAGE_DIR/coverage.html"
 echo "----------------------------------------------------------------------------------"
 
 total_coverage=$(go tool cover -func=test/coverage/coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
