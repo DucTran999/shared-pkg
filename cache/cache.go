@@ -18,7 +18,7 @@ type Cache interface {
 }
 
 type Config struct {
-	isCacheOnMemory bool
+	IsCacheOnMemory bool
 
 	Host     string
 	Port     int
@@ -27,7 +27,7 @@ type Config struct {
 }
 
 func NewCache(config Config) (Cache, error) {
-	if config.isCacheOnMemory {
+	if config.IsCacheOnMemory {
 		return NewRistrettoCache()
 	}
 
