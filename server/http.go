@@ -12,6 +12,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+type FreeResourceFunc func(ctx context.Context) error
+
 type HttpServer interface {
 	Start() error
 	Stop(ctx context.Context) error
@@ -42,7 +44,7 @@ func (s *httpServer) Stop(ctx context.Context) error {
 }
 
 // GracefulShutdown handles OS signals and performs a graceful shutdown of the server.
-func GracefulShutdown(shutdownTasks ...func(ctx context.Context) error) {
+func GracefulShutdown(shutdownTasks ...FreeResourceFunc) {
 	const shutdownTimeout = 5 * time.Second
 
 	// Listen for SIGINT or SIGTERM
