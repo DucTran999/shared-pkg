@@ -11,13 +11,15 @@ cyan() {
   echo -e "\033[36m$1\033[0m"
 }
 
+COVERAGE_PKG_PATH=test/coverage
+
 cyan "🔍 Code coverage analyzing..."
 echo "----------------------------------------------------------------------------------"
-go test -cover ./logger/... -coverprofile=coverage.out
+go test -cover ./logger/... ./scrypto/... -coverprofile=coverage.out
 go tool cover -html=coverage.out -o coverage.html
 echo "----------------------------------------------------------------------------------"
 
-total_coverage=$(go tool cover -func=coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
+total_coverage=$(go tool cover -func=$COVERAGE_PKG_PATH/coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
 coverage_threshold=80.0
 comparison=$(echo "$total_coverage >= $coverage_threshold" | bc -l)
 if [ "$comparison" -eq 0 ]; then

@@ -4,7 +4,7 @@ on:
   push:
     branches: ["dev"]
   pull_request:
-    branches: ["dev"]
+    branches: ["*"]
 
 jobs:
   Lint:
@@ -47,4 +47,6 @@ jobs:
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
+          files: ./test/coverage/coverage.out
+          flags: unittests
           token: ${{ secrets.CODECOV_TOKEN }}
