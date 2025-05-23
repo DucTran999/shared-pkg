@@ -25,6 +25,11 @@ func Test_CaesarCryptoGraphy(t *testing.T) {
 			input: "daniel",
 			nonce: -2,
 		},
+		{
+			name:  "message encrypt with nonce not between 0 and 25",
+			input: "daniel",
+			nonce: 88,
+		},
 	}
 
 	for _, tc := range testcases {
