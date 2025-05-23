@@ -40,5 +40,4 @@ func Test_CaesarCryptoGraphy(t *testing.T) {
 			assert.Equal(t, tc.input, plaintext)
 		})
 	}
-
 }
