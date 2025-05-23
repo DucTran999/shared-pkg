@@ -8,7 +8,7 @@ import (
 )
 
 func Test_CaesarCryptoGraphy(t *testing.T) {
-	rawMessage := "daniel"
+	rawMessage := "daniel!"
 
 	nonce := 8
 	cipher := caesar.CaesarEncrypt(rawMessage, nonce)
