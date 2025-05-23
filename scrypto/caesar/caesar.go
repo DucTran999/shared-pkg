@@ -6,7 +6,7 @@ import (
 
 // CaesarEncrypt shifts letters by 'shift' positions
 func CaesarEncrypt(text string, shift int) string {
-	shift = shift % 26
+	shift = ((shift % 26) + 26) % 26
 	result := []rune{}
 
 	for _, ch := range text {
@@ -16,7 +16,7 @@ func CaesarEncrypt(text string, shift int) string {
 				base = 'a'
 			}
 			// Rotate and wrap using modulo
-			encrypted := (ch-base+rune(shift))%26 + base
+			encrypted := ((ch-base+rune(shift))%26+26)%26 + base
 			result = append(result, encrypted)
 		} else {
 			// Keep non-letter characters unchanged

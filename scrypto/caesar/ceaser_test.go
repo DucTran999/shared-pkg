@@ -7,12 +7,33 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type testTable struct {
+	name  string
+	input string
+	nonce int
+}
+
 func Test_CaesarCryptoGraphy(t *testing.T) {
-	rawMessage := "daniel!"
+	testcases := []testTable{
+		{
+			name:  "message with non chars",
+			input: "daniel!",
+			nonce: 8,
+		},
+		{
+			name:  "message encrypt with nonce negative",
+			input: "daniel",
+			nonce: -2,
+		},
+	}
 
-	nonce := 8
-	cipher := caesar.CaesarEncrypt(rawMessage, nonce)
-	plaintext := caesar.CaesarDecrypt(cipher, nonce)
+	for _, tc := range testcases {
+		t.Run(tc.name, func(t *testing.T) {
+			cipher := caesar.CaesarEncrypt(tc.input, tc.nonce)
+			plaintext := caesar.CaesarDecrypt(cipher, tc.nonce)
 
-	assert.Equal(t, rawMessage, plaintext)
+			assert.Equal(t, tc.input, plaintext)
+		})
+	}
+
 }

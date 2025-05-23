@@ -15,9 +15,8 @@ COVERAGE_PKG_PATH=test/coverage
 
 cyan "🔍 Code coverage analyzing..."
 echo "----------------------------------------------------------------------------------"
-mkdir -p $COVERAGE_PKG_PATH
-go test -cover ./logger/... ./scrypto/... -coverprofile=$COVERAGE_PKG_PATH/coverage.out
-go tool cover -html=$COVERAGE_PKG_PATH/coverage.out -o $COVERAGE_PKG_PATH/coverage.html
+go test -cover ./logger/... ./scrypto/... -coverprofile=coverage.out
+go tool cover -html=coverage.out -o coverage.html
 echo "----------------------------------------------------------------------------------"
 
 total_coverage=$(go tool cover -func=$COVERAGE_PKG_PATH/coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
