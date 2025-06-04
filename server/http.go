@@ -21,8 +21,17 @@ type httpServer struct {
 }
 
 func (s *httpServer) Start() error {
+
 	go func() {
+		maxRetries := 60 // 30 seconds with 500ms intervals
+		retryCount := 0
 		for {
+			if retryCount >= maxRetries {
+				log.Error().Msgf("failed to reach server at %s after %d attempts", s.server.Addr, maxRetries)
+				return
+			}
+			retryCount++
+
 			// Wait for the server to be ready
 			time.Sleep(500 * time.Millisecond)
 
