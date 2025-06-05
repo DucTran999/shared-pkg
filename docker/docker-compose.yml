@@ -8,7 +8,7 @@ services:
       POSTGRES_DB: atlana_shop
       PGDATA: /data/postgres
     volumes:
-      - ../../.docker/pg-data:/data/postgres
+      - ../.docker/pg-data:/data/postgres
     ports:
       - "5432:5432"
     networks:
@@ -27,6 +27,15 @@ services:
       - "9000:9000"
       - "8120:8123"
       - "9009:9009"
+    networks:
+      - localnet
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.0.12-alpine
+    container_name: dbkit_redis
+    ports:
+      - "6379:6379"
     networks:
       - localnet
     restart: unless-stopped

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/DucTran999/shared-pkg/utils/retry"
-	"github.com/DucTran999/shared-pkg/utils/retry/backoff"
+	"github.com/DucTran999/shared-pkg/retry"
+	"github.com/DucTran999/shared-pkg/retry/backoff"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

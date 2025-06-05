@@ -1,8 +1,12 @@
 .vscode
 
-.docker
-logger/examples/logs
+*/cmd
 
+.data
+.docker
+.data
+logs
 cmd
 
-go.sum
+# coverage
+coverage
