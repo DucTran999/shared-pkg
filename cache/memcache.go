@@ -12,12 +12,32 @@ type ristrettoCache struct {
 	cache *ristretto.Cache[string, string]
 }
 
-func NewRistrettoCache() (Cache, error) {
-	c, err := ristretto.NewCache(&ristretto.Config[string, string]{
-		NumCounters: 1e7,     // number of keys to track frequency of (10M).
-		MaxCost:     1 << 30, // maximum cost of cache (1GB).
-		BufferItems: 64,      // number of keys per Get buffer.
+// RistrettoConfig holds configuration for the in-memory Ristretto cache
+type RistrettoConfig struct {
+	NumCounters int64
+	MaxCost     int64
+	BufferItems int64
+}
 
+// DefaultRistrettoConfig returns sensible default values for Ristretto
+func DefaultRistrettoConfig() RistrettoConfig {
+	return RistrettoConfig{
+		NumCounters: 1e7,     // 10M
+		MaxCost:     1 << 30, // 1GB
+		BufferItems: 64,
+	}
+}
+
+func NewRistrettoCache(config ...RistrettoConfig) (Cache, error) {
+	cfg := DefaultRistrettoConfig()
+	if len(config) > 0 {
+		cfg = config[0]
+	}
+
+	c, err := ristretto.NewCache(&ristretto.Config[string, string]{
+		NumCounters: cfg.NumCounters, // number of keys to track frequency
+		MaxCost:     cfg.MaxCost,     // maximum cost of cache
+		BufferItems: cfg.BufferItems, // number of keys per Get buffer
 	})
 
 	if err != nil {
@@ -42,11 +62,15 @@ func (r *ristrettoCache) Set(ctx context.Context, key string, value any, expirat
 		return fmt.Errorf("value cannot be empty")
 	}
 
-	// Set the value in the cache with a TTL
-	ok := r.cache.SetWithTTL(key, strVal, 1, expiration)
+	// Use string length as a reasonable cost metric
+	cost := int64(len(strVal))
+	ok := r.cache.SetWithTTL(key, strVal, cost, expiration)
 	if !ok {
 		return fmt.Errorf("failed to set key: %s", key)
 	}
+
+	// Ensure value is visible immediately
+	r.cache.Wait()
 
 	return nil
 }
