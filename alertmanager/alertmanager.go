@@ -23,9 +23,9 @@ type alertManager struct {
 	httpClient    http.Client
 }
 
-func NewAlertManager(host string) *alertManager {
+func NewAlertManager(host string) (*alertManager, error) {
 	if host == "" {
-		panic(ErrEmptyHost)
+		return nil, ErrEmptyHost
 	}
 
 	once.Do(func() {
@@ -37,7 +37,7 @@ func NewAlertManager(host string) *alertManager {
 		}
 	})
 
-	return amInst
+	return amInst, nil
 }
 
 func (am *alertManager) Send(opts ...Options) error {
