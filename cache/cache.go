@@ -2,7 +2,6 @@ package cache
 
 import (
 	"context"
-	"fmt"
 	"time"
 )
 
@@ -36,7 +35,7 @@ func NewCache(config Config) (Cache, error) {
 	// Validate configuration
 	if !config.IsCacheOnMemory {
 		if config.Host == "" {
-			return nil, fmt.Errorf("Redis host cannot be empty")
+			return nil, ErrMissingHost
 		}
 	}
 
