@@ -7,10 +7,10 @@ import (
 
 // Define error messages as constants
 var (
-	ErrHostRequired     = errors.New("Host is required")
-	ErrPortRequired     = errors.New("Port is required and cannot be 0")
-	ErrUsernameRequired = errors.New("Username is required")
-	ErrDatabaseRequired = errors.New("Database name is required")
+	ErrHostRequired     = errors.New("host is required")
+	ErrPortRequired     = errors.New("port is required and cannot be 0")
+	ErrUsernameRequired = errors.New("username is required")
+	ErrDatabaseRequired = errors.New("database name is required")
 )
 
 type Config struct {

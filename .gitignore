@@ -4,8 +4,9 @@
 
 .data
 .docker
-logger/examples/logs
-
+.data
+logs
 cmd
 
-go.sum
+# coverage
+coverage

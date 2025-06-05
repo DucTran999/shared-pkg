@@ -1,12 +1,15 @@
 package logger
 
+// Define a private type to avoid collisions
+type contextKey string
+
 const (
 	// Env
-	Development = "development"
+	Development = "develop"
 	Testing     = "testing"
 	Staging     = "staging"
 	Production  = "production"
 
 	// key extract from context
-	requestIDKeyCtx = "requestID"
+	RequestIDKeyCtx = contextKey("request-id")
 )
