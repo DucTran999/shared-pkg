@@ -69,7 +69,7 @@ func WithIdleConnTimeout(d time.Duration) Option {
 	}
 }
 
-// WithMaxConnsPerHost sets the maximum number of concurrent connections per host
+// WithMaxIdleConnsPerHost sets the maximum number of concurrent connections per host
 // for the underlying http.Transport. This helps limit or control parallelism
 // when communicating with a specific service.
 //
@@ -77,8 +77,8 @@ func WithIdleConnTimeout(d time.Duration) Option {
 //
 // Example usage:
 //
-//	client := NewClient(WithMaxConnsPerHost(20))
-func WithMaxConnsPerHost(n int) Option {
+//	client := NewClient(WithMaxIdleConnsPerHost(20))
+func WithMaxIdleConnsPerHost(n int) Option {
 	return func(c *httpClient) {
 		// If n is invalid (<= 0), ignore it and use the default value. (10)
 		if n <= 0 {
