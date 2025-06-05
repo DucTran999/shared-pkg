@@ -5,8 +5,5 @@
 logs
 cmd
 
-go.sum
-
 # coverage
-coverage.html
-coverage.out
+coverage
