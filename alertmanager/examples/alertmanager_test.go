@@ -8,9 +8,10 @@ import (
 )
 
 func Test_SendAlert(t *testing.T) {
-	am := alertmanager.NewAlertManager("http://localhost:9093")
+	am, err := alertmanager.NewAlertManager("http://localhost:9093")
+	require.NoError(t, err)
 
-	err := am.Send(
+	err = am.Send(
 		alertmanager.WithLabels(alertmanager.Labels{
 			"level": "critical",
 		}),

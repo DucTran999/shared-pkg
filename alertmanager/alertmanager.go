@@ -79,8 +79,7 @@ func (am *alertManager) sendHttpRequest(optsPost []options) error {
 	req.Header.Set("Content-Type", "application/json")
 
 	// Send request
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := am.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to send alert: %w", err)
 	}
