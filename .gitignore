@@ -1,5 +1,8 @@
 .vscode
 
+*/cmd
+
+.data
 .docker
 .data
 logs
