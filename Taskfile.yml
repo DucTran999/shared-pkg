@@ -1,11 +1,11 @@
-version: '3'
+version: "3"
 
 dotenv:
   - ".env"
 
 tasks:
-  default: 
-    desc: 'show all available tasks'
+  default:
+    desc: "show all available tasks"
     cmds:
       - task --list-all
     silent: true
@@ -13,9 +13,9 @@ tasks:
   tidy:
     desc: install pkg listed in go.mod
     cmds:
-      -  go mod tidy
+      - go mod tidy
 
-  coverage: 
+  coverage:
     desc: run unit test and force coverage > 80%
     cmds:
       - ./scripts/coverage.sh
@@ -23,8 +23,8 @@ tasks:
   lint:
     desc: run golangci-lint
     cmds:
-      - golangci-lint run --timeout 5m --config .golangci.yml ./logger/
-      
+      - golangci-lint run --timeout 5m --config .golangci.yml
+
   deps:
     desc: install dependencies
     cmds:
