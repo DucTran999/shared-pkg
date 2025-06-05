@@ -2,15 +2,16 @@ package server
 
 import (
 	"errors"
-	"fmt"
+	"net"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 var (
-	ErrPortRequired = errors.New("port error: must be positive integer")
+	ErrInvalidPort = errors.New("port error must be specified and greater than 0, and less than 65536")
 )
 
 // ServerConfig holds the configuration settings for the HTTP server.
@@ -58,7 +59,7 @@ func NewGinHttpServer(router *gin.Engine, config ServerConfig) (*ginServer, erro
 		return nil, err
 	}
 
-	addr := fmt.Sprintf("%s:%d", cleanConfig.Host, cleanConfig.Port)
+	addr := net.JoinHostPort(cleanConfig.Host, strconv.Itoa(cleanConfig.Port))
 	server := &http.Server{
 		Addr:              addr,
 		Handler:           router,
@@ -80,8 +81,9 @@ func setupConfig(config ServerConfig) (*ServerConfig, error) {
 	cleanConfig := config
 
 	// Port must be specified and greater than 0
-	if cleanConfig.Port <= 0 {
-		return nil, ErrPortRequired
+	if cleanConfig.Port <= 0 || cleanConfig.Port > 65535 {
+		// Return an error if the port is not valid
+		return nil, ErrInvalidPort
 	}
 
 	// Set default idle timeout if not provided

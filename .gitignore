@@ -1,12 +1,12 @@
 .vscode
 
+*/cmd
+
+.data
 .docker
 .data
 logs
 cmd
 
-go.sum
-
 # coverage
-coverage.html
-coverage.out
+coverage
