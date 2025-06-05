@@ -2,23 +2,29 @@ package cache
 
 import (
 	"context"
+	"fmt"
 	"time"
 )
 
 type Cache interface {
+	// Get retrieves a value from the cache by its key.
 	Get(ctx context.Context, key string) (string, error)
 
+	// Set stores a value in the cache with an optional expiration time.
 	Set(ctx context.Context, key string, value any, expiration time.Duration) error
 
+	// Del removes one or more keys from the cache.
 	Del(ctx context.Context, keys ...string) error
 
+	// Ping checks the connection to the cache server.
 	Ping(ctx context.Context) error
 
+	// Close closes the cache connection.
 	Close() error
 }
 
 type Config struct {
-	isCacheOnMemory bool
+	IsCacheOnMemory bool
 
 	Host     string
 	Port     int
@@ -27,7 +33,14 @@ type Config struct {
 }
 
 func NewCache(config Config) (Cache, error) {
-	if config.isCacheOnMemory {
+	// Validate configuration
+	if !config.IsCacheOnMemory {
+		if config.Host == "" {
+			return nil, fmt.Errorf("Redis host cannot be empty")
+		}
+	}
+
+	if config.IsCacheOnMemory {
 		return NewRistrettoCache()
 	}
 
