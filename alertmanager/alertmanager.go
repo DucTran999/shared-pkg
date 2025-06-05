@@ -15,7 +15,7 @@ var (
 )
 
 type AlertManager interface {
-	Send() error
+	Send(opts ...Options) error
 }
 
 type alertManager struct {
@@ -24,9 +24,16 @@ type alertManager struct {
 }
 
 func NewAlertManager(host string) *alertManager {
+	if host == "" {
+		panic(ErrEmptyHost)
+	}
+
 	once.Do(func() {
 		amInst = &alertManager{
 			alertEndpoint: fmt.Sprintf("%s/api/v2/alerts", host),
+			httpClient: http.Client{
+				Timeout: time.Second * 10, // Set a timeout for the HTTP client
+			},
 		}
 	})
 
@@ -38,6 +45,16 @@ func (am *alertManager) Send(opts ...Options) error {
 
 	for _, opt := range opts {
 		opt(&cfg)
+	}
+
+	// Validate required fields
+	if len(cfg.Labels) == 0 {
+		return fmt.Errorf("alert must have at least one label")
+	}
+
+	// Ensure required labels like alertname are present
+	if _, ok := cfg.Labels["alertname"]; !ok {
+		return fmt.Errorf("alertname label is required")
 	}
 
 	if cfg.EndTime.IsZero() {
@@ -54,8 +71,6 @@ func (am *alertManager) sendHttpRequest(optsPost []options) error {
 	if err != nil {
 		return err
 	}
-	// Print JSON you're sending
-	fmt.Println("Request JSON:", string(jsonByte))
 
 	req, postErr := http.NewRequest(http.MethodPost, am.alertEndpoint, bytes.NewBuffer(jsonByte))
 	if postErr != nil {
@@ -67,11 +82,14 @@ func (am *alertManager) sendHttpRequest(optsPost []options) error {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to send alert: %w", err)
 	}
 	defer resp.Body.Close()
 
-	// Output response
-	fmt.Println("Status:", resp.Status)
+	// Check for non-2xx response
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return fmt.Errorf("alertmanager returned non-2xx status: %s", resp.Status)
+	}
+
 	return nil
 }
