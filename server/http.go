@@ -11,6 +11,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+type FreeResourceFunc func(ctx context.Context) error
+
 type HttpServer interface {
 	Start() error
 	Stop(ctx context.Context) error
