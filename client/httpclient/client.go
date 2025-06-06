@@ -28,7 +28,7 @@ type httpClient struct {
 	client *http.Client
 }
 
-type response struct {
+type Response struct {
 	StatusCode  int
 	Status      string
 	Body        []byte
@@ -73,7 +73,7 @@ func NewClient(options ...Option) *httpClient {
 //
 //	client := NewClient()
 //	data, err := client.Get(context.Background(), "http://example.com")
-func (h *httpClient) Get(ctx context.Context, url string) (*response, error) {
+func (h *httpClient) Get(ctx context.Context, url string) (*Response, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
@@ -96,7 +96,7 @@ func (h *httpClient) Get(ctx context.Context, url string) (*response, error) {
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
-	resp := &response{
+	resp := &Response{
 		StatusCode:  rawResp.StatusCode,
 		Status:      rawResp.Status,
 		Body:        body,

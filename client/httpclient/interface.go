@@ -10,5 +10,5 @@ import "context"
 //	data, err := client.Get(ctx, "http://example.com")
 type HTTPClient interface {
 	// Get performs an HTTP GET request to the specified URL using the provided context.
-	Get(ctx context.Context, url string) (*response, error)
+	Get(ctx context.Context, url string) (Response, error)
 }
