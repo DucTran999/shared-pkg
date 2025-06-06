@@ -87,7 +87,7 @@ func WithMaxIdleConnsPerHost(n int) Option {
 
 		if c.client.Transport != nil {
 			if transport, ok := c.client.Transport.(*http.Transport); ok {
-				transport.MaxConnsPerHost = n
+				transport.MaxIdleConnsPerHost = n
 			}
 		}
 	}

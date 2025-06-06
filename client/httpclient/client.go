@@ -71,8 +71,8 @@ func NewClient(options ...Option) *httpClient {
 //
 // Example usage:
 //
-//	client := NewClient(context.Background())
-//	data, err := client.Get(ctx, "http://example.com")
+//	client := NewClient()
+//	data, err := client.Get(context.Background(), "http://example.com")
 func (h *httpClient) Get(ctx context.Context, url string) (*response, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
