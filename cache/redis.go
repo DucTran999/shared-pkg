@@ -75,7 +75,7 @@ func (r *redisCache) Set(ctx context.Context, key string, value any, expiration 
 		return fmt.Errorf("serialize cache value: %w", err)
 	}
 
-	return r.client.Set(ctx, key, b, expiration).Err()
+	return r.client.Set(ctx, key, string(b), expiration).Err()
 }
 
 func (r *redisCache) Del(ctx context.Context, keys ...string) error {
