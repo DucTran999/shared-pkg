@@ -2,6 +2,8 @@ package cache
 
 import (
 	"context"
+	"encoding"
+	"encoding/json"
 	"fmt"
 	"net"
 	"strconv"
@@ -56,12 +58,24 @@ func (r *redisCache) Get(ctx context.Context, key string) (string, error) {
 }
 
 func (r *redisCache) Set(ctx context.Context, key string, value any, expiration time.Duration) error {
-	strVal := fmt.Sprintf("%v", value)
-	if strVal == "" {
-		return fmt.Errorf("value cannot be empty")
+	var b []byte
+	var err error
+
+	switch v := value.(type) {
+	case encoding.BinaryMarshaler:
+		b, err = v.MarshalBinary()
+	case string:
+		b = []byte(v)
+	case []byte:
+		b = v
+	default:
+		b, err = json.Marshal(v) // fallback to JSON
+	}
+	if err != nil {
+		return fmt.Errorf("serialize cache value: %w", err)
 	}
 
-	return r.client.Set(ctx, key, value, expiration).Err()
+	return r.client.Set(ctx, key, string(b), expiration).Err()
 }
 
 func (r *redisCache) Del(ctx context.Context, keys ...string) error {
