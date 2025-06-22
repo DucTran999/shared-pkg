@@ -61,7 +61,7 @@ func (r *redisCache) Set(ctx context.Context, key string, value any, expiration 
 		return fmt.Errorf("value cannot be empty")
 	}
 
-	return r.client.Set(ctx, key, strVal, expiration).Err()
+	return r.client.Set(ctx, key, value, expiration).Err()
 }
 
 func (r *redisCache) Del(ctx context.Context, keys ...string) error {
